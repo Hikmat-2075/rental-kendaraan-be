@@ -8,9 +8,26 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("admin")
 public class Admin extends User{
     // Default constructor
-    public Admin() {
-        super();
+     public Admin(String name, String email, String password) {
+        super(); // akan menyesuaikan constructor User nanti
+        
+    }
+ // Method-method logis (kerangka kosong dulu)
+
+    public void konfirmasiTransaksi(Long transaksiId) {
+        // TODO: panggil TransaksiService atau inject dan update status
     }
 
+    public void hapusKendaraan(Long kendaraanId) {
+        // TODO: panggil KendaraanService untuk menghapus
+    }
+
+    public void tambahKendaraan(Object kendaraan) {
+        // TODO: panggil KendaraanService atau repository
+    }
+
+    public void lihatRiwayat() {
+        // TODO: ambil data dari RiwayatTransaksiService
+    }
 
 }
