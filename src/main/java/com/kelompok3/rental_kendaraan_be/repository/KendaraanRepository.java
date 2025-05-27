@@ -8,3 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface KendaraanRepository extends JpaRepository<Kendaraan, Long> {
     // Tambahkan custom query jika diperlukan
 }
+
