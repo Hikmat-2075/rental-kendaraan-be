@@ -1,6 +1,13 @@
 package com.kelompok3.rental_kendaraan_be.repository;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.kelompok3.rental_kendaraan_be.model.User;
+
 //Zainul
-public class UserRepository {
-    
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
 }
