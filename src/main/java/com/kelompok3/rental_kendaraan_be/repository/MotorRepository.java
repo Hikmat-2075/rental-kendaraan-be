@@ -1,6 +1,10 @@
 package com.kelompok3.rental_kendaraan_be.repository;
 
-//Bram
-public class MotorRepository {
-    
+import com.kelompok3.rental_kendaraan_be.model.Motor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MotorRepository extends JpaRepository<Motor, Long> {
+    // Tambahkan custom query jika diperlukan
 }
