@@ -40,7 +40,7 @@ public class AdminService {
      * Batalkan transaksi (ubah status jadi 'DIBATALKAN')
      */
     public void batalkanTransaksi(Long id) {
-        Transaksi transaksi = ((Object) transaksiRepository.findById(id))
+        Transaksi transaksi = transaksiRepository.findById(id)
                 .orElseThrow(() -> new InputValidationException("Transaksi tidak ditemukan"));
         transaksi.setStatus("DIBATALKAN");
         transaksiRepository.save(transaksi);

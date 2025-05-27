@@ -1,33 +1,71 @@
 package com.kelompok3.rental_kendaraan_be.model;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import java.util.List;
 
 //Paksi
 @Entity
-@DiscriminatorValue("penyewa")
+@DiscriminatorValue("PENYEWA")
 public class Penyewa extends User {
-    // Informasi tambahan (bisa ditambahkan ke form registrasi)
+
+    @Column
     private String noTelepon;
+
+    @Column
     private String alamat;
 
     // Relasi ke transaksi
     @OneToMany(mappedBy = "penyewa", cascade = CascadeType.ALL)
-    private List<Transaksi> transaksiList;
+    private List<Transaksi> transaksiList = new ArrayList<>();
 
-    // Constructor dengan field tambahan
-    public Penyewa(String name, String email, String password, String noTelepon, String alamat) {
-        super(); // role default = penyewa
+    // Default constructor (wajib untuk JPA)
+    public Penyewa() {
+        super();
+        this.setRole("PENYEWA");
+    }
+
+    // Constructor lengkap
+    public Penyewa(String username, String password, String email, String namaLengkap, String noTelepon, String alamat, LocalDateTime createdAt) {
+        super(username, password, email, namaLengkap, "PENYEWA", createdAt);
         this.noTelepon = noTelepon;
         this.alamat = alamat;
     }
 
-    // Tambahan method (jika ingin logika dasar di entity)
-    public void tambahTransaksi(Transaksi transaksi) {
-        transaksi.setPenyewa(this);
-        this.transaksiList.add(transaksi);
+    // Getter & Setter
+    public String getNoTelepon() {
+        return noTelepon;
     }
+
+    public void setNoTelepon(String noTelepon) {
+        this.noTelepon = noTelepon;
+    }
+
+    public String getAlamat() {
+        return alamat;
+    }
+
+    public void setAlamat(String alamat) {
+        this.alamat = alamat;
+    }
+
+    public List<Transaksi> getTransaksiList() {
+        return transaksiList;
+    }
+
+    public void setTransaksiList(List<Transaksi> transaksiList) {
+        this.transaksiList = transaksiList;
+    }
+
+    // Tambahan method (jika ingin logika dasar di entity)
+    // public void tambahTransaksi(Transaksi transaksi) {
+    //     transaksi.setPenyewa(this);
+    //     this.transaksiList.add(transaksi);
+    // }
 }
