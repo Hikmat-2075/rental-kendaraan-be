@@ -41,7 +41,9 @@ public class User {
     private LocalDateTime createdAt;
 
     // Constructors
-    public User() {}
+    public User() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public User(String username, String password, String email, String namaLengkap, String role, LocalDateTime createdAt) {
         this.username = username;
@@ -49,7 +51,7 @@ public class User {
         this.email = email;
         this.namaLengkap = namaLengkap;
         this.role = role;
-        this.createdAt = createdAt;
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
     }
 
     // Getters and Setters

@@ -63,9 +63,4 @@ public class Penyewa extends User {
         this.transaksiList = transaksiList;
     }
 
-    // Tambahan method (jika ingin logika dasar di entity)
-    // public void tambahTransaksi(Transaksi transaksi) {
-    //     transaksi.setPenyewa(this);
-    //     this.transaksiList.add(transaksi);
-    // }
 }
