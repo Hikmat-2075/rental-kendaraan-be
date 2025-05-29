@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MotorRepository extends JpaRepository<Motor, Long> {
-    // Tambahkan custom query jika diperlukan
+
 }

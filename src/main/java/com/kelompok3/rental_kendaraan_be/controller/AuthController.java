@@ -1,67 +1,86 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.kelompok3.rental_kendaraan_be.dto.AuthResponseDTO;
 import com.kelompok3.rental_kendaraan_be.dto.LoginRequest;
-import com.kelompok3.rental_kendaraan_be.dto.JwtResponse;
 import com.kelompok3.rental_kendaraan_be.dto.RegisterRequest;
 import com.kelompok3.rental_kendaraan_be.model.User;
-import com.kelompok3.rental_kendaraan_be.service.UserService;
-import com.kelompok3.rental_kendaraan_be.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kelompok3.rental_kendaraan_be.repository.UserRepository;
+import com.kelompok3.rental_kendaraan_be.security.JWTGenerator;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import com.kelompok3.rental_kendaraan_be.security.CustomUserDetailsService;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JWTGenerator jwtGenerator;
+    
     @Autowired
-    private UserService userService;
+    private CustomUserDetailsService customUserDetailsService; // Inject CustomUserDetailsService
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    public AuthController(
+                          UserRepository userRepository,
+                          PasswordEncoder passwordEncoder,
+                          JWTGenerator jwtGenerator) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtGenerator = jwtGenerator;
+    }
 
-    // Endpoint untuk Register
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            // Using CustomUserDetailsService to load the user
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getUsername());
+            
+            // Validate password using passwordEncoder
+            if (!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
+                throw new BadCredentialsException("Invalid username or password");
+            }
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtGenerator.generateToken(authentication);
+            return ResponseEntity.ok(new AuthResponseDTO(token));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponseDTO("Invalid username or password"));
+        }
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        // Cek jika email sudah terdaftar
-        if (userService.existsByEmail(registerRequest.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
-        // Membuat user baru
         User user = new User();
         user.setUsername(registerRequest.getUsername());
-        user.setPassword(registerRequest.getPassword());  // Jangan lupa enkripsi password sebelum menyimpannya!
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEmail(registerRequest.getEmail());
         user.setNamaLengkap(registerRequest.getNamaLengkap());
         user.setNoTelepon(registerRequest.getNoTelepon());
+        user.setRole("PENYEWA"); // Set default role
 
-        User createdUser = userService.createUser(user);
-
-        // Menghasilkan token setelah berhasil registrasi
-        String token = jwtTokenProvider.createToken(createdUser.getUsername());
-
-        // Response dengan token
-        return ResponseEntity.ok(new JwtResponse(token));
-    }
-
-    // Endpoint untuk Login
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        // Mencari user berdasarkan username
-        User user = userService.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + loginRequest.getUsername()));
-
-        // Memeriksa password (gunakan metode yang sesuai, misalnya menggunakan bcrypt untuk enkripsi password)
-        if (!userService.checkPassword(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-
-        // Generate JWT token menggunakan JwtTokenProvider
-        String token = jwtTokenProvider.createToken(user.getUsername());
-
-        // Mengirimkan token sebagai bagian dari response
-        return ResponseEntity.ok(new JwtResponse(token));
+        userRepository.save(user);
+        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 }
+

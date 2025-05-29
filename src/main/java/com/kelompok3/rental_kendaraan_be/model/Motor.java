@@ -12,7 +12,7 @@ public class Motor extends Kendaraan {
     private String tipeMotor;
 
     @Column(name = "kapasitas_mesin")
-    private int kapasitasMesin;
+    private Integer kapasitasMesin;
 
     // Constructor tanpa parameter (default)
     public Motor() {
@@ -20,10 +20,10 @@ public class Motor extends Kendaraan {
     }
 
     // Constructor dengan semua field (termasuk field dari superclass)
-    public Motor(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMotor, int kapasitasMesin) {
-        super(nama, jenis, nomorPolisi, tahun, status, harga, jenisTransmisi, jenisBahanBakar);
+    public Motor(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMotor, Integer kapasitasMesin, String gambar) {
+        super(nama, jenis, nomorPolisi, tahun, status, harga, jenisTransmisi, jenisBahanBakar, gambar);
         this.tipeMotor = tipeMotor;
-        this.setKapasitasMesin(kapasitasMesin);
+        this.kapasitasMesin = kapasitasMesin;
     }
 
     // Getter dan Setter untuk tipeMotor
@@ -36,14 +36,11 @@ public class Motor extends Kendaraan {
     }
 
     // Getter dan Setter untuk kapasitasMesin
-    public int getKapasitasMesin() {
+    public Integer getKapasitasMesin() {
         return kapasitasMesin;
     }
 
-    public void setKapasitasMesin(int kapasitasMesin) {
-        if (kapasitasMesin < 0) {
-            throw new IllegalArgumentException("Kapasitas mesin tidak boleh negatif");
-        }
+    public void setKapasitasMesin(Integer kapasitasMesin) {
         this.kapasitasMesin = kapasitasMesin;
     }
 }

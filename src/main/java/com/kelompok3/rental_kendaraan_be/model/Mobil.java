@@ -20,8 +20,8 @@ public class Mobil extends Kendaraan {
     }
 
     // Constructor dengan semua field (termasuk field dari superclass)
-    public Mobil(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMobil, int kapasitas) {
-        super(nama, jenis, nomorPolisi, tahun, status, harga, jenisTransmisi, jenisBahanBakar);
+    public Mobil(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMobil, int kapasitas, String gambar) {
+        super(nama, jenis, nomorPolisi, tahun, status, harga, jenisTransmisi, jenisBahanBakar, gambar);
         this.tipeMobil = tipeMobil;
         this.setKapasitas(kapasitas);
     }

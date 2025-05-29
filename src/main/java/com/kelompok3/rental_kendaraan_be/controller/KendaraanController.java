@@ -1,20 +1,23 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
 import com.kelompok3.rental_kendaraan_be.model.Kendaraan;
-import com.kelompok3.rental_kendaraan_be.service.kendaraanService;
+import com.kelompok3.rental_kendaraan_be.service.KendaraanService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping("/api/kendaraan")
-@CrossOrigin(origins = "http://localhost:3000")
 public class KendaraanController {
 
     @Autowired
-    private kendaraanService kendaraanService;
+    private KendaraanService kendaraanService;
 
     @GetMapping
     public List<Kendaraan> getAllKendaraan() {
@@ -22,8 +25,10 @@ public class KendaraanController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Kendaraan> getKendaraanById(@PathVariable Long id) {
-        return kendaraanService.getKendaraanById(id);
+    public ResponseEntity<Kendaraan> getKendaraanById(@PathVariable Long id) {
+        Optional<Kendaraan> kendaraan = kendaraanService.getKendaraanById(id);
+        return kendaraan.map(ResponseEntity::ok)
+                       .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
@@ -32,8 +37,13 @@ public class KendaraanController {
     }
 
     @PutMapping("/{id}")
-    public Kendaraan updateKendaraan(@PathVariable Long id, @RequestBody Kendaraan kendaraan) {
-        return kendaraanService.updateKendaraan(id, kendaraan);
+    public ResponseEntity<Kendaraan> updateKendaraan(@PathVariable Long id, @RequestBody Kendaraan kendaraan) {
+        try {
+            Kendaraan updatedKendaraan = kendaraanService.updateKendaraan(id, kendaraan);
+            return ResponseEntity.ok(updatedKendaraan);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -41,3 +51,4 @@ public class KendaraanController {
         kendaraanService.deleteKendaraan(id);
     }
 }
+

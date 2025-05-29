@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class kendaraanService {
+public class KendaraanService {
 
     @Autowired
     private KendaraanRepository kendaraanRepository;
@@ -27,21 +27,20 @@ public class kendaraanService {
     }
 
     public Kendaraan updateKendaraan(Long id, Kendaraan kendaraan) {
-        Optional<Kendaraan> existing = kendaraanRepository.findById(id);
-        if (existing.isPresent()) {
-            Kendaraan k = existing.get();
-            k.setNama(kendaraan.getNama());
-            k.setJenis(kendaraan.getJenis());
-            k.setNomorPolisi(kendaraan.getNomorPolisi());
-            k.setTahun(kendaraan.getTahun());
-            k.setStatus(kendaraan.getStatus());
-            k.setHarga(kendaraan.getHarga());
-            k.setJenisTransmisi(kendaraan.getJenisTransmisi());
-            k.setJenisBahanBakar(kendaraan.getJenisBahanBakar()); // tambahkan baris ini
-            return kendaraanRepository.save(k);
-        } else {
-            return null;
-        }
+        Kendaraan existing = kendaraanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Kendaraan not found with id: " + id));
+
+        if (kendaraan.getNama() != null) existing.setNama(kendaraan.getNama());
+        if (kendaraan.getJenis() != null) existing.setJenis(kendaraan.getJenis());
+        if (kendaraan.getNomorPolisi() != null) existing.setNomorPolisi(kendaraan.getNomorPolisi());
+        if (kendaraan.getTahun() != null) existing.setTahun(kendaraan.getTahun());
+        if (kendaraan.getStatus() != null) existing.setStatus(kendaraan.getStatus());
+        if (kendaraan.getHarga() != null) existing.setHarga(kendaraan.getHarga());
+        if (kendaraan.getJenisTransmisi() != null) existing.setJenisTransmisi(kendaraan.getJenisTransmisi());
+        if (kendaraan.getJenisBahanBakar() != null) existing.setJenisBahanBakar(kendaraan.getJenisBahanBakar());
+        if (kendaraan.getGambar() != null) existing.setGambar(kendaraan.getGambar());
+
+        return kendaraanRepository.save(existing);
     }
 
     public void deleteKendaraan(Long id) {

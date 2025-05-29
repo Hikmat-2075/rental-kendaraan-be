@@ -33,7 +33,7 @@ public class User {
     private String noTelepon;
 
     @Column(insertable = false, updatable = false)
-    private String role; // ADMIN or PENYEWA
+    private String role = "PENYEWA"; // Default role is PENYEWA
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

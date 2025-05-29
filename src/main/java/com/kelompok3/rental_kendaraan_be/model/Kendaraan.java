@@ -32,7 +32,7 @@ public class Kendaraan {
     @Column(name = "tahun")
     private Integer tahun;
 
-    @Enumerated(EnumType.STRING)  // Menyimpan status sebagai enum
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusKendaraan status;
 
@@ -45,12 +45,15 @@ public class Kendaraan {
     @Column(name = "jenis_bahan_bakar")
     private String jenisBahanBakar;
 
+    @Column(name = "gambar")
+    private String gambar;
+
     // Constructor tanpa parameter (default)
     public Kendaraan() {
     }
 
     // Constructor dengan semua field (kecuali id, karena auto-generated)
-    public Kendaraan(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar) {
+    public Kendaraan(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String gambar) {
         this.nama = nama;
         this.jenis = jenis;
         this.nomorPolisi = nomorPolisi;
@@ -59,6 +62,7 @@ public class Kendaraan {
         this.setHarga(harga);
         this.jenisTransmisi = jenisTransmisi;
         this.jenisBahanBakar = jenisBahanBakar;
+        this.gambar = gambar;
     }
 
     // Getter dan Setter
@@ -136,6 +140,14 @@ public class Kendaraan {
 
     public void setJenisBahanBakar(String jenisBahanBakar) {
         this.jenisBahanBakar = jenisBahanBakar;
+    }
+
+    public String getGambar() {
+        return gambar;
+    }
+
+    public void setGambar(String gambar) {
+        this.gambar = gambar;
     }
 
     // Enum untuk status kendaraan

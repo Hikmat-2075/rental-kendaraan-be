@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MobilRepository extends JpaRepository<Mobil, Long> {
-    // Tambahkan custom query jika diperlukan
+
 }
