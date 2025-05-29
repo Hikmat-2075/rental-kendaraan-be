@@ -27,23 +27,24 @@ public class MobilService {
     }
 
     public Mobil updateMobil(Long id, Mobil mobil) {
-        Optional<Mobil> existing = mobilRepository.findById(id);
-        if (existing.isPresent()) {
-            Mobil m = existing.get();
-            m.setTipeMobil(mobil.getTipeMobil());
-            m.setKapasitas(mobil.getKapasitas());
-            m.setNama(mobil.getNama());
-            m.setJenis(mobil.getJenis());
-            m.setNomorPolisi(mobil.getNomorPolisi());
-            m.setTahun(mobil.getTahun());
-            m.setStatus(mobil.getStatus());
-            m.setHarga(mobil.getHarga());
-            m.setJenisTransmisi(mobil.getJenisTransmisi());
-            m.setJenisBahanBakar(mobil.getJenisBahanBakar());
-            return mobilRepository.save(m);
-        } else {
-            return null;
-        }
+        Mobil existingMobil = mobilRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mobil not found with id: " + id));
+
+        if (mobil.getNama() != null) existingMobil.setNama(mobil.getNama());
+        if (mobil.getJenis() != null) existingMobil.setJenis(mobil.getJenis());
+        if (mobil.getNomorPolisi() != null) existingMobil.setNomorPolisi(mobil.getNomorPolisi());
+        if (mobil.getTahun() != null) existingMobil.setTahun(mobil.getTahun());
+        if (mobil.getStatus() != null) existingMobil.setStatus(mobil.getStatus());
+        if (mobil.getHarga() != null) existingMobil.setHarga(mobil.getHarga());
+        if (mobil.getJenisTransmisi() != null) existingMobil.setJenisTransmisi(mobil.getJenisTransmisi());
+        if (mobil.getJenisBahanBakar() != null) existingMobil.setJenisBahanBakar(mobil.getJenisBahanBakar());
+        if (mobil.getGambar() != null) existingMobil.setGambar(mobil.getGambar());
+
+        if (mobil.getTipeMobil() != null) existingMobil.setTipeMobil(mobil.getTipeMobil());
+        if (mobil.getKapasitas() != 0) existingMobil.setKapasitas(mobil.getKapasitas());
+       
+
+        return mobilRepository.save(existingMobil);     
     }
 
     public void deleteMobil(Long id) {

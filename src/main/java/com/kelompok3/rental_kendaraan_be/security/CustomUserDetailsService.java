@@ -21,16 +21,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     // Spring Security will call this method during login
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+
+        if (user.getRole() == null) {
+            user.setRole("PENYEWA"); // Memberikan default role jika null
+        }
 
         // Return Spring Security's User object
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail()) // atau getUsername() jika itu identitasnya
+                .withUsername(user.getUsername()) // atau getUsername() jika itu identitasnya
                 .password(user.getPassword())
                 .roles(user.getRole()) // pastikan ini berupa String seperti "USER", "ADMIN"
                 .build();
     }
 }
-

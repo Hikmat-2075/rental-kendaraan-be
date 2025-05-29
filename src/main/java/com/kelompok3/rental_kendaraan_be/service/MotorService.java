@@ -27,23 +27,22 @@ public class MotorService {
     }
 
     public Motor updateMotor(Long id, Motor motor) {
-        Optional<Motor> existing = motorRepository.findById(id);
-        if (existing.isPresent()) {
-            Motor m = existing.get();
-            m.setTipeMotor(motor.getTipeMotor());
-            m.setKapasitasMesin(motor.getKapasitasMesin());
-            m.setNama(motor.getNama());
-            m.setJenis(motor.getJenis());
-            m.setNomorPolisi(motor.getNomorPolisi());
-            m.setTahun(motor.getTahun());
-            m.setStatus(motor.getStatus());
-            m.setHarga(motor.getHarga());
-            m.setJenisTransmisi(motor.getJenisTransmisi());
-            m.setJenisBahanBakar(motor.getJenisBahanBakar());
-            return motorRepository.save(m);
-        } else {
-            return null;
-        }
+        Motor existingMotor = motorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Motor not found with id: " + id));
+
+        if (motor.getNama() != null) existingMotor.setNama(motor.getNama());
+        if (motor.getJenis() != null) existingMotor.setJenis(motor.getJenis());
+        if (motor.getNomorPolisi() != null) existingMotor.setNomorPolisi(motor.getNomorPolisi());
+        if (motor.getTahun() != null) existingMotor.setTahun(motor.getTahun());
+        if (motor.getStatus() != null) existingMotor.setStatus(motor.getStatus());
+        if (motor.getHarga() != null) existingMotor.setHarga(motor.getHarga());
+        if (motor.getJenisTransmisi() != null) existingMotor.setJenisTransmisi(motor.getJenisTransmisi());
+        if (motor.getJenisBahanBakar() != null) existingMotor.setJenisBahanBakar(motor.getJenisBahanBakar());
+        if (motor.getGambar() != null) existingMotor.setGambar(motor.getGambar());
+        if (motor.getTipeMotor() != null) existingMotor.setTipeMotor(motor.getTipeMotor());
+        if (motor.getKapasitasMesin() != null) existingMotor.setKapasitasMesin(motor.getKapasitasMesin());
+
+        return motorRepository.save(existingMotor);
     }
 
     public void deleteMotor(Long id) {
