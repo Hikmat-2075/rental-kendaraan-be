@@ -8,6 +8,7 @@ import com.kelompok3.rental_kendaraan_be.model.User;
 
 //Zainul
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+    Boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
 }

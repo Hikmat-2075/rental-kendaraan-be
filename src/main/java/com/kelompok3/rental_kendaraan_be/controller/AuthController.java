@@ -1,52 +1,67 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.kelompok3.rental_kendaraan_be.dto.LoginRequest;
+import com.kelompok3.rental_kendaraan_be.dto.JwtResponse;
+import com.kelompok3.rental_kendaraan_be.dto.RegisterRequest;
 import com.kelompok3.rental_kendaraan_be.model.User;
 import com.kelompok3.rental_kendaraan_be.service.UserService;
+import com.kelompok3.rental_kendaraan_be.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     @Autowired
     private UserService userService;
 
-    // Register endpoint
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    // Endpoint untuk Register
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        // Cek jika username atau email sudah digunakan
-        if (userService.getUserByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username sudah digunakan");
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        // Cek jika email sudah terdaftar
+        if (userService.existsByEmail(registerRequest.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
         }
-        if (userService.getUserByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email sudah digunakan");
-        }
-        user.setCreatedAt(LocalDateTime.now());
-        User savedUser = userService.saveUser(user);
-        return ResponseEntity.ok(savedUser);
+
+        // Membuat user baru
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        user.setPassword(registerRequest.getPassword());  // Jangan lupa enkripsi password sebelum menyimpannya!
+        user.setEmail(registerRequest.getEmail());
+        user.setNamaLengkap(registerRequest.getNamaLengkap());
+        user.setNoTelepon(registerRequest.getNoTelepon());
+
+        User createdUser = userService.createUser(user);
+
+        // Menghasilkan token setelah berhasil registrasi
+        String token = jwtTokenProvider.createToken(createdUser.getUsername());
+
+        // Response dengan token
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    // Login endpoint
+    // Endpoint untuk Login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        Optional<User> userOpt = userService.getUserByUsername(loginRequest.getUsername());
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (user.getPassword().equals(loginRequest.getPassword())) {
-                return ResponseEntity.ok(user);
-            }
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        // Mencari user berdasarkan username
+        User user = userService.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + loginRequest.getUsername()));
+
+        // Memeriksa password (gunakan metode yang sesuai, misalnya menggunakan bcrypt untuk enkripsi password)
+        if (!userService.checkPassword(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
-        return ResponseEntity.status(401).body("Username atau password salah");
+
+        // Generate JWT token menggunakan JwtTokenProvider
+        String token = jwtTokenProvider.createToken(user.getUsername());
+
+        // Mengirimkan token sebagai bagian dari response
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 }

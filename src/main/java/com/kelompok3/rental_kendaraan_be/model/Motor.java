@@ -1,10 +1,9 @@
 package com.kelompok3.rental_kendaraan_be.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
 
-//Bram
 @Entity
 @Table(name = "motor")
 public class Motor extends Kendaraan {
@@ -15,16 +14,19 @@ public class Motor extends Kendaraan {
     @Column(name = "kapasitas_mesin")
     private int kapasitasMesin;
 
+    // Constructor tanpa parameter (default)
     public Motor() {
         super();
     }
 
-    public Motor(String nama, String jenis, String nomorPolisi, Integer tahun, String status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMotor, int kapasitasMesin) {
+    // Constructor dengan semua field (termasuk field dari superclass)
+    public Motor(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar, String tipeMotor, int kapasitasMesin) {
         super(nama, jenis, nomorPolisi, tahun, status, harga, jenisTransmisi, jenisBahanBakar);
         this.tipeMotor = tipeMotor;
-        this.kapasitasMesin = kapasitasMesin;
+        this.setKapasitasMesin(kapasitasMesin);
     }
 
+    // Getter dan Setter untuk tipeMotor
     public String getTipeMotor() {
         return tipeMotor;
     }
@@ -33,11 +35,15 @@ public class Motor extends Kendaraan {
         this.tipeMotor = tipeMotor;
     }
 
+    // Getter dan Setter untuk kapasitasMesin
     public int getKapasitasMesin() {
         return kapasitasMesin;
     }
 
     public void setKapasitasMesin(int kapasitasMesin) {
+        if (kapasitasMesin < 0) {
+            throw new IllegalArgumentException("Kapasitas mesin tidak boleh negatif");
+        }
         this.kapasitasMesin = kapasitasMesin;
     }
 }
