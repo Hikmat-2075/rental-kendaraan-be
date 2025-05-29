@@ -15,6 +15,8 @@ import com.kelompok3.rental_kendaraan_be.repository.KendaraanRepository;
 import com.kelompok3.rental_kendaraan_be.repository.PembayaranRepository;
 import com.kelompok3.rental_kendaraan_be.repository.TransaksiRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class PembayaranService {
 
@@ -33,7 +35,7 @@ public class PembayaranService {
     public Pembayaran buatPembayaranBaru(Long transaksiId, Double jumlahPembayaran) {
         // Ambil transaksi yang sesuai
         Transaksi transaksi = transaksiRepository.findById(transaksiId)
-                .orElseThrow(() -> new RuntimeException("Transaksi tidak ditemukan"));
+                .orElseThrow(() -> new EntityNotFoundException("Transaksi tidak ditemukan"));
 
         // Mengecek jumlah yang dibayar
         double totalHarga = transaksi.getTotalHarga();
@@ -71,7 +73,7 @@ public class PembayaranService {
     // READ: Mendapatkan pembayaran berdasarkan ID
     public Pembayaran getPembayaranById(Long id) {
         return pembayaranRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pembayaran tidak ditemukan"));
+                .orElseThrow(() -> new EntityNotFoundException("Pembayaran tidak ditemukan"));
     }
 
     // READ: Mendapatkan semua pembayaran
@@ -82,17 +84,21 @@ public class PembayaranService {
     // UPDATE: Mengubah status pembayaran, jika diperlukan (misal update status jika pembayaran berhasil)
     public Pembayaran updateStatusPembayaran(Long id, StatusPembayaran statusPembayaran) {
         Pembayaran pembayaran = getPembayaranById(id);
-        pembayaran.setStatusPembayaran(statusPembayaran);
-        pembayaranRepository.save(pembayaran);
 
-        // Jika statusnya LUNAS, update transaksi dan kendaraan
-        if (statusPembayaran == StatusPembayaran.LUNAS) {
-            Transaksi transaksi = pembayaran.getTransaksi();
-            transaksi.setStatusTransaksi(StatusTransaksi.SELESAI);
-            Kendaraan kendaraan = transaksi.getKendaraan();
-            kendaraan.setStatus(StatusKendaraan.TERSEDIA);
-            transaksiRepository.save(transaksi);
-            kendaraanRepository.save(kendaraan);
+        // Pastikan status pembayaran valid
+        if (statusPembayaran != pembayaran.getStatusPembayaran()) {
+            pembayaran.setStatusPembayaran(statusPembayaran);
+            pembayaranRepository.save(pembayaran);
+
+            // Jika statusnya LUNAS, update transaksi dan kendaraan
+            if (statusPembayaran == StatusPembayaran.LUNAS) {
+                Transaksi transaksi = pembayaran.getTransaksi();
+                transaksi.setStatusTransaksi(StatusTransaksi.SELESAI);
+                Kendaraan kendaraan = transaksi.getKendaraan();
+                kendaraan.setStatus(StatusKendaraan.TERSEDIA);
+                transaksiRepository.save(transaksi);
+                kendaraanRepository.save(kendaraan);
+            }
         }
 
         return pembayaran;

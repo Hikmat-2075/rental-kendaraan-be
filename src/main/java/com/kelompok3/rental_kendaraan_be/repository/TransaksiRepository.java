@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface TransaksiRepository extends JpaRepository<Transaksi, Long> {
-    List<Transaksi> findByUserId(Long userId);
+    List<Transaksi> findByPenyewaId(Long userId);
 }
