@@ -1,6 +1,7 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,51 +27,36 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Mendapatkan semua user
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
-    // Mendapatkan user berdasarkan ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        try {
-            User user = userService.getUserById(id);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Optional<User> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok)
+                   .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // Membuat user baru
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        try {
-            User createdUser = userService.saveUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    // Update user berdasarkan ID
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
-            User existingUser = userService.getUserById(id);
-            existingUser.setUsername(userDetails.getUsername());
-            existingUser.setEmail(userDetails.getEmail());
-            existingUser.setNamaLengkap(userDetails.getNamaLengkap());
-            existingUser.setRole(userDetails.getRole());
-            User updatedUser = userService.saveUser(existingUser);
+            User updatedUser = userService.updateUser(id, user);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    // Hapus user berdasarkan ID
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         try {
@@ -80,4 +66,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
 }

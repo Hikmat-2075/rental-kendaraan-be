@@ -1,19 +1,29 @@
 package com.kelompok3.rental_kendaraan_be.dto;
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class RegisterRequest {
-    
+
     @NotBlank(message = "Username is required")
     private String username;
-    
+
     @NotBlank(message = "Password is required")
     private String password;
 
+    @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
+
+    @NotBlank(message = "Nama Lengkap is required")
+    private String namaLengkap;
+
+    @NotBlank(message = "No Telepon is required")
+    @jakarta.validation.constraints.Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "No Telepon should be a valid phone number")
+    private String noTelepon;
+
+    // Default constructor
+    public RegisterRequest() {}
 
     // Getter dan Setter
     public String getUsername() {
@@ -38,5 +48,21 @@ public class RegisterRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getNamaLengkap() {
+        return namaLengkap;
+    }
+
+    public void setNamaLengkap(String namaLengkap) {
+        this.namaLengkap = namaLengkap;
+    }
+
+    public String getNoTelepon() {
+        return noTelepon;
+    }
+
+    public void setNoTelepon(String noTelepon) {
+        this.noTelepon = noTelepon;
     }
 }

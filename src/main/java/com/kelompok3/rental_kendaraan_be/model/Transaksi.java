@@ -1,13 +1,15 @@
 package com.kelompok3.rental_kendaraan_be.model;
 
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -20,29 +22,41 @@ public class Transaksi {
     private Long id;
 
     @ManyToOne
-    @Column(nullable = false)
-    private Penyewa penyewa;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User penyewa;  // Menghubungkan dengan User (Penyewa)
 
     @ManyToOne
-    @Column(nullable = false)
-    private Kendaraan kendaraan;
+    @JoinColumn(name = "kendaraan_id", nullable = false)
+    private Kendaraan kendaraan;  // Menghubungkan dengan Kendaraan (Mobil atau Motor)
 
-    @Column(nullable = false)
-    private LocalDateTime tanggalMulai;
+    @Column(name = "tanggal_peminjaman", nullable = false)
+    private LocalDateTime tanggalPeminjaman;
 
-    @Column(nullable = false)
-    private LocalDateTime tanggalSelesai;
+    @Column(name = "tanggal_pengembalian", nullable = false)
+    private LocalDateTime tanggalPengembalian;
 
-    @Column(nullable = false)
+    @Column(name = "total_harga", nullable = false)
     private Double totalHarga;
 
-    @Column(nullable = false)
-    private String status; // PENDING, SELESAI
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_transaksi", nullable = false)
+    private StatusTransaksi statusTransaksi;  // Status transaksi: PENDING, SEDANG_SEWA, SELESAI
 
-    @Column(nullable = false)
-    private LocalDateTime waktuTransaksi;
+    @Column(name = "metode_pembayaran", nullable = false)
+    private String metodePembayaran; // Metode Pembayaran (QRIS, Debit, dll)
 
+    // Constructors
     public Transaksi() {
+    }
+
+    public Transaksi(User penyewa, Kendaraan kendaraan, LocalDateTime tanggalPeminjaman, LocalDateTime tanggalPengembalian, Double totalHarga, StatusTransaksi statusTransaksi, String metodePembayaran) {
+        this.penyewa = penyewa;
+        this.kendaraan = kendaraan;
+        this.tanggalPeminjaman = tanggalPeminjaman;
+        this.tanggalPengembalian = tanggalPengembalian;
+        this.totalHarga = totalHarga;
+        this.statusTransaksi = statusTransaksi;
+        this.metodePembayaran = metodePembayaran;
     }
 
     // Getters and Setters
@@ -54,11 +68,11 @@ public class Transaksi {
         this.id = id;
     }
 
-    public Penyewa getPenyewa() {
+    public User getPenyewa() {
         return penyewa;
     }
 
-    public void setPenyewa(Penyewa penyewa) {
+    public void setPenyewa(User penyewa) {
         this.penyewa = penyewa;
     }
 
@@ -70,20 +84,20 @@ public class Transaksi {
         this.kendaraan = kendaraan;
     }
 
-    public LocalDateTime getTanggalMulai() {
-        return tanggalMulai;
+    public LocalDateTime getTanggalPeminjaman() {
+        return tanggalPeminjaman;
     }
 
-    public void setTanggalMulai(LocalDateTime tanggalMulai) {
-        this.tanggalMulai = tanggalMulai;
+    public void setTanggalPeminjaman(LocalDateTime tanggalPeminjaman) {
+        this.tanggalPeminjaman = tanggalPeminjaman;
     }
 
-    public LocalDateTime getTanggalSelesai() {
-        return tanggalSelesai;
+    public LocalDateTime getTanggalPengembalian() {
+        return tanggalPengembalian;
     }
 
-    public void setTanggalSelesai(LocalDateTime tanggalSelesai) {
-        this.tanggalSelesai = tanggalSelesai;
+    public void setTanggalPengembalian(LocalDateTime tanggalPengembalian) {
+        this.tanggalPengembalian = tanggalPengembalian;
     }
 
     public Double getTotalHarga() {
@@ -94,20 +108,25 @@ public class Transaksi {
         this.totalHarga = totalHarga;
     }
 
-    public String getStatus() {
-        return status;
+    public StatusTransaksi getStatusTransaksi() {
+        return statusTransaksi;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusTransaksi(StatusTransaksi statusTransaksi) {
+        this.statusTransaksi = statusTransaksi;
     }
 
-    public LocalDateTime getWaktuTransaksi() {
-        return waktuTransaksi;
+    public String getMetodePembayaran() {
+        return metodePembayaran;
     }
 
-    public void setWaktuTransaksi(LocalDateTime waktuTransaksi) {
-        this.waktuTransaksi = waktuTransaksi;
+    public void setMetodePembayaran(String metodePembayaran) {
+        this.metodePembayaran = metodePembayaran;
+    }
+
+    public enum StatusTransaksi {
+        PENDING,
+        SEDANG_SEWA,
+        SELESAI
     }
 }
-

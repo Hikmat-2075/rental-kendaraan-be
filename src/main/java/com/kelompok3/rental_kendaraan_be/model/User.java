@@ -3,19 +3,14 @@ package com.kelompok3.rental_kendaraan_be.model;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role")
 public class User {
 
     @Id
@@ -34,7 +29,10 @@ public class User {
     @Column(nullable = false)
     private String namaLengkap;
 
-    @Column(nullable = false, insertable = false, updatable = false)
+    @Column(nullable = false)
+    private String noTelepon;
+
+    @Column(insertable = false, updatable = false)
     private String role; // ADMIN or PENYEWA
 
     @Column(nullable = false)
@@ -45,12 +43,13 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    public User(String username, String password, String email, String namaLengkap, String role, LocalDateTime createdAt) {
+    public User(String username, String password, String email, String namaLengkap, String noTelepon, String role, LocalDateTime createdAt) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.namaLengkap = namaLengkap;
-        this.role = role;
+        this.noTelepon = noTelepon;
+        this.setRole(role);
         this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
     }
 
@@ -96,12 +95,26 @@ public class User {
         this.namaLengkap = namaLengkap;
     }
 
+    public String getNoTelepon() {
+        return noTelepon;
+    }
+    
+    public void setNoTelepon(String noTelepon) {
+        this.noTelepon = noTelepon;
+    }
+
     public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        if (role == null || role.isEmpty()) {
+            this.role = "PENYEWA";
+        } else if (role.equals("ADMIN") || role.equals("PENYEWA")) {
+            this.role = role; 
+        } else {
+            throw new IllegalArgumentException("Role must be either 'ADMIN' or 'PENYEWA'");
+        }
     }
 
     public LocalDateTime getCreatedAt() {

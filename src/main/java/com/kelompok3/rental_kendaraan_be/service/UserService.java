@@ -1,6 +1,7 @@
 package com.kelompok3.rental_kendaraan_be.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,48 +19,55 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Get All Users
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Get User by ID with Exception Handling
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                             .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
-    // Get User by Username with Exception Handling
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                             .orElseThrow(() -> new RuntimeException("User not found with username " + username));
-    }
-
-    // Get User by Email with Exception Handling
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                             .orElseThrow(() -> new RuntimeException("User not found with email " + email));
-    }
-
-    // Save User and Check Duplicate (with password hashing)
-    public User saveUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists!");
-        }
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists!");
+    public User createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
 
-        // Encode password sebelum menyimpan
+        // Enkripsi password sebelum menyimpannya
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    // Delete User with Exception Handling
+    public User updateUser(Long id, User userDetails) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        user.setUsername(userDetails.getUsername());
+        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));  // Enkripsi password
+        user.setEmail(userDetails.getEmail());
+        user.setNamaLengkap(userDetails.getNamaLengkap());
+        user.setNoTelepon(userDetails.getNoTelepon());
+        user.setRole(userDetails.getRole());
+        return userRepository.save(user);
+    }
+
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with id " + id);
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        userRepository.delete(user);
+    }
+
+    // Metode untuk mencari user berdasarkan username
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByEmail(username); // Asumsi username = email
+    }
+
+    // Metode untuk mengecek kecocokan password
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    // Cek apakah email sudah terdaftar
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }

@@ -1,6 +1,15 @@
 package com.kelompok3.rental_kendaraan_be.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "kendaraan")
@@ -23,8 +32,9 @@ public class Kendaraan {
     @Column(name = "tahun")
     private Integer tahun;
 
+    @Enumerated(EnumType.STRING)  // Menyimpan status sebagai enum
     @Column(name = "status")
-    private String status;
+    private StatusKendaraan status;
 
     @Column(name = "harga")
     private Double harga;
@@ -40,13 +50,13 @@ public class Kendaraan {
     }
 
     // Constructor dengan semua field (kecuali id, karena auto-generated)
-    public Kendaraan(String nama, String jenis, String nomorPolisi, Integer tahun, String status, Double harga, String jenisTransmisi, String jenisBahanBakar) {
+    public Kendaraan(String nama, String jenis, String nomorPolisi, Integer tahun, StatusKendaraan status, Double harga, String jenisTransmisi, String jenisBahanBakar) {
         this.nama = nama;
         this.jenis = jenis;
         this.nomorPolisi = nomorPolisi;
         this.tahun = tahun;
         this.status = status;
-        this.harga = harga;
+        this.setHarga(harga);
         this.jenisTransmisi = jenisTransmisi;
         this.jenisBahanBakar = jenisBahanBakar;
     }
@@ -93,11 +103,11 @@ public class Kendaraan {
         this.tahun = tahun;
     }
 
-    public String getStatus() {
+    public StatusKendaraan getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusKendaraan status) {
         this.status = status;
     }
 
@@ -106,6 +116,9 @@ public class Kendaraan {
     }
 
     public void setHarga(Double harga) {
+        if (harga < 0) {
+            throw new IllegalArgumentException("Harga kendaraan tidak boleh negatif");
+        }
         this.harga = harga;
     }
 
@@ -123,5 +136,12 @@ public class Kendaraan {
 
     public void setJenisBahanBakar(String jenisBahanBakar) {
         this.jenisBahanBakar = jenisBahanBakar;
+    }
+
+    // Enum untuk status kendaraan
+    public enum StatusKendaraan {
+        TERSEDIA,
+        DISEWA,
+        TIDAK_TERSEDIA
     }
 }

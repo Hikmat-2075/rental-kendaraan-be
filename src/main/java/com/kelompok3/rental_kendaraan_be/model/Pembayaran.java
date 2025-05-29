@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -19,24 +22,36 @@ public class Pembayaran {
     private Long id;
 
     @ManyToOne
-    private Transaksi transaksi;
+    @JoinColumn(name = "transaksi_id", nullable = false)
+    private Transaksi transaksi; // Menghubungkan dengan Transaksi
 
-    @Column(nullable = false)
-    private String metodePembayaran; // QRIS, Transfer, Debit
+    @Column(name = "metode_pembayaran", nullable = false)
+    private String metodePembayaran; // QRIS, Debit, dll
 
-    @Column(nullable = false)
-    private String status; // MENUNGGU_KONFIRMASI, BERHASIL
+    @Column(name = "jumlah_pembayaran", nullable = false)
+    private Double jumlahPembayaran; // Jumlah uang yang dibayarkan
 
-    @Column(nullable = false)
-    private LocalDateTime waktuPembayaran;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_pembayaran", nullable = false)
+    private StatusPembayaran statusPembayaran; // STATUS: PENDING, LUNAS, GAGAL
 
-    @Column(nullable = false)
-    private LocalDateTime waktuKonfirmasi;
+    @Column(name = "tanggal_pembayaran", nullable = false)
+    private LocalDateTime tanggalPembayaran; // Tanggal pembayaran dilakukan
 
+    // Constructor tanpa parameter (default)
     public Pembayaran() {
     }
 
-    // Getters and Setters
+    // Constructor dengan semua field
+    public Pembayaran(Transaksi transaksi, String metodePembayaran, Double jumlahPembayaran, StatusPembayaran statusPembayaran, LocalDateTime tanggalPembayaran) {
+        this.transaksi = transaksi;
+        this.metodePembayaran = metodePembayaran;
+        this.jumlahPembayaran = jumlahPembayaran;
+        this.statusPembayaran = statusPembayaran;
+        this.tanggalPembayaran = tanggalPembayaran;
+    }
+
+    // Getter dan Setter
     public Long getId() {
         return id;
     }
@@ -61,28 +76,33 @@ public class Pembayaran {
         this.metodePembayaran = metodePembayaran;
     }
 
-    public String getStatus() {
-        return status;
+    public Double getJumlahPembayaran() {
+        return jumlahPembayaran;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setJumlahPembayaran(Double jumlahPembayaran) {
+        this.jumlahPembayaran = jumlahPembayaran;
     }
 
-    public LocalDateTime getWaktuPembayaran() {
-        return waktuPembayaran;
+    public StatusPembayaran getStatusPembayaran() {
+        return statusPembayaran;
     }
 
-    public void setWaktuPembayaran(LocalDateTime waktuPembayaran) {
-        this.waktuPembayaran = waktuPembayaran;
+    public void setStatusPembayaran(StatusPembayaran statusPembayaran) {
+        this.statusPembayaran = statusPembayaran;
     }
 
-    public LocalDateTime getWaktuKonfirmasi() {
-        return waktuKonfirmasi;
+    public LocalDateTime getTanggalPembayaran() {
+        return tanggalPembayaran;
     }
 
-    public void setWaktuKonfirmasi(LocalDateTime waktuKonfirmasi) {
-        this.waktuKonfirmasi = waktuKonfirmasi;
+    public void setTanggalPembayaran(LocalDateTime tanggalPembayaran) {
+        this.tanggalPembayaran = tanggalPembayaran;
+    }
+
+    public enum StatusPembayaran {
+        PENDING, // Pembayaran belum selesai
+        LUNAS,   // Pembayaran berhasil dan selesai
+        GAGAL    // Pembayaran gagal
     }
 }
-
