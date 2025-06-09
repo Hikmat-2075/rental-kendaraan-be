@@ -45,7 +45,8 @@ public class TransaksiController {
                                 transaksi.getTanggalPeminjaman(),
                                 transaksi.getTanggalPengembalian(),
                                 transaksi.getTotalHarga(),
-                                transaksi.getStatusTransaksi().toString());
+                                transaksi.getStatusTransaksi().toString(),
+                                transaksi.getKendaraan().getGambar());
 
                 return ResponseEntity.ok(response);
         }
@@ -63,14 +64,15 @@ public class TransaksiController {
                                 transaksi.getTanggalPeminjaman(),
                                 transaksi.getTanggalPengembalian(),
                                 transaksi.getTotalHarga(),
-                                transaksi.getStatusTransaksi().toString());
+                                transaksi.getStatusTransaksi().toString(),
+                                transaksi.getKendaraan().getGambar());
 
                 return ResponseEntity.ok(response);
         }
 
-        @GetMapping
-        public ResponseEntity<List<TransaksiResponseDTO>> getAllTransaksi() {
-                List<Transaksi> transaksiList = transaksiService.getAll();
+        @GetMapping("/user/{userId}")
+        public ResponseEntity<List<TransaksiResponseDTO>> getTransaksiByUserId(@PathVariable Long userId) {
+                List<Transaksi> transaksiList = transaksiService.getTransaksiByUserId(userId);
 
                 List<TransaksiResponseDTO> response = transaksiList.stream()
                                 .map(transaksi -> new TransaksiResponseDTO(
@@ -82,7 +84,28 @@ public class TransaksiController {
                                                 transaksi.getTanggalPeminjaman(),
                                                 transaksi.getTanggalPengembalian(),
                                                 transaksi.getTotalHarga(),
-                                                transaksi.getStatusTransaksi().toString()))
+                                                transaksi.getStatusTransaksi().toString(),
+                                                transaksi.getKendaraan().getGambar()))
+                                .collect(Collectors.toList());
+
+                return ResponseEntity.ok(response);
+        }
+
+        @GetMapping
+        public ResponseEntity<List<TransaksiResponseDTO>> getAllTransaksi() {
+                List<Transaksi> transaksiList = transaksiService.getAll();
+
+                List<TransaksiResponseDTO> response = transaksiList.stream()
+                                .map(transaksi -> new TransaksiResponseDTO(
+                                        transaksi.getId(),
+                                        transaksi.getPenyewa().getId(),
+                                        transaksi.getKendaraan().getId(),
+                                        transaksi.getKendaraan().getNama(),
+                                        transaksi.getKendaraan().getHarga(),
+                                        transaksi.getTanggalPeminjaman(),
+                                        transaksi.getTanggalPengembalian(),                                                transaksi.getTotalHarga(),
+                                        transaksi.getStatusTransaksi().toString(),
+                                        transaksi.getKendaraan().getGambar()))
                                 .collect(Collectors.toList());
 
                 return ResponseEntity.ok(response);
@@ -107,7 +130,8 @@ public class TransaksiController {
                                 updated.getTanggalPeminjaman(),
                                 updated.getTanggalPengembalian(),
                                 updated.getTotalHarga(),
-                                updated.getStatusTransaksi().toString());
+                                updated.getStatusTransaksi().toString(),
+                                updated.getKendaraan().getGambar());
 
                 return ResponseEntity.ok(response);
         }

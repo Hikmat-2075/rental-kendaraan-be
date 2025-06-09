@@ -21,4 +21,5 @@ public interface TransaksiRepository extends JpaRepository<Transaksi, Long> {
     List<Transaksi> findByStatusTransaksi(Transaksi.StatusTransaksi statusTransaksi);
 
     boolean existsByPenyewa_IdAndStatusTransaksiNot(Long userId, Transaksi.StatusTransaksi statusTransaksi);
+    List<Transaksi> findByPenyewaId(Long penyewaId);
 }

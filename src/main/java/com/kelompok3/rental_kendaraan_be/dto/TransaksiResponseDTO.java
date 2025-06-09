@@ -12,11 +12,12 @@ public class TransaksiResponseDTO {
     private LocalDate tanggalPengembalian;
     private Double totalHarga;
     private String statusTransaksi;
+    private String gambar;
 
     // Constructor dari entity
     public TransaksiResponseDTO(Long transaksiId, Long userId, Long kendaraanId, String namaKendaraan,
                                 Double hargaKendaraan, LocalDate tanggalPeminjaman,
-                                LocalDate tanggalPengembalian, Double totalHarga, String statusTransaksi) {
+                                LocalDate tanggalPengembalian, Double totalHarga, String statusTransaksi, String gambar) {
         this.transaksiId = transaksiId;
         this.userId = userId;
         this.kendaraanId = kendaraanId;
@@ -26,6 +27,7 @@ public class TransaksiResponseDTO {
         this.tanggalPengembalian = tanggalPengembalian;
         this.totalHarga = totalHarga;
         this.statusTransaksi = statusTransaksi;
+        this.gambar = gambar;
     }
 
     // Getter & Setter untuk transaksiId
@@ -107,5 +109,13 @@ public class TransaksiResponseDTO {
 
     public void setStatusTransaksi(String statusTransaksi) {
         this.statusTransaksi = statusTransaksi;
+    }
+
+    public String getGambar(){
+        return gambar;
+    }
+
+    public void setGambar(){
+        this.gambar = gambar;
     }
 }
