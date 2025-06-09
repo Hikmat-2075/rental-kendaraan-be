@@ -84,6 +84,10 @@ public class TransaksiService {
         return transaksi;
     }
 
+    public List<Transaksi> getTransaksiByUserId(Long userId) {
+        return transaksiRepository.findByPenyewaId(userId);
+    }
+
     // Mendapatkan transaksi berdasarkan ID
     public Transaksi getTransaksiById(Long id) {
         return transaksiRepository.findById(id)
