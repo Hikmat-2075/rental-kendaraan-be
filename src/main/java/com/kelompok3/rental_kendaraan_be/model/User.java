@@ -32,8 +32,8 @@ public class User {
     @Column(nullable = false)
     private String noTelepon;
 
-    @Column(insertable = false, updatable = false)
-    private String role = "PENYEWA"; // Default role is PENYEWA
+    @Column(nullable = false)
+    private String role;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

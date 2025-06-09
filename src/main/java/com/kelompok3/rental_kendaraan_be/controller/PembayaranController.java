@@ -1,65 +1,65 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kelompok3.rental_kendaraan_be.dto.PembayaranRequest;
 import com.kelompok3.rental_kendaraan_be.model.Pembayaran;
 import com.kelompok3.rental_kendaraan_be.service.PembayaranService;
-import com.kelompok3.rental_kendaraan_be.model.Pembayaran.StatusPembayaran;
 
 @RestController
 @RequestMapping("/api/pembayaran")
 public class PembayaranController {
 
-    private final PembayaranService pembayaranService;
+    @Autowired
+    private PembayaranService pembayaranService;
 
-    public PembayaranController(PembayaranService pembayaranService) {
-        this.pembayaranService = pembayaranService;
-    }
+    // DTO untuk request body
 
-    // Membuat pembayaran baru
-    @PostMapping("/buat/{transaksiId}")
-    public ResponseEntity<Pembayaran> buatPembayaran(@PathVariable Long transaksiId, 
-                                                     @RequestParam Double jumlahPembayaran) {
-        Pembayaran pembayaran = pembayaranService.buatPembayaranBaru(transaksiId, jumlahPembayaran);
 
-        // Cek apakah ada kelebihan pembayaran
-        if (pembayaran.getJumlahPembayaran() > pembayaran.getTransaksi().getTotalHarga()) {
-            double kelebihanPembayaran = pembayaran.getJumlahPembayaran() - pembayaran.getTransaksi().getTotalHarga();
-            // Kirimkan informasi kelebihan pembayaran ke frontend jika ada
-            return ResponseEntity.ok()
-                    .header("Kelebihan-Pembayaran", String.valueOf(kelebihanPembayaran))
-                    .body(pembayaran);
-        }
-
+    @PostMapping
+    public ResponseEntity<Pembayaran> createPembayaran(@RequestBody PembayaranRequest request) {
+        Pembayaran pembayaran = pembayaranService.createPembayaran(request.transaksiId, request.jumlahBayar);
         return ResponseEntity.ok(pembayaran);
     }
 
-    // Mendapatkan pembayaran berdasarkan ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Pembayaran> getPembayaranById(@PathVariable Long id) {
-        Pembayaran pembayaran = pembayaranService.getPembayaranById(id);
-        return ResponseEntity.ok(pembayaran);
-    }
-
-    // Mendapatkan semua pembayaran
     @GetMapping
-    public ResponseEntity<?> getAllPembayaran() {
+    public ResponseEntity<List<Pembayaran>> getAllPembayaran() {
         return ResponseEntity.ok(pembayaranService.getAllPembayaran());
     }
 
-    // Mengupdate status pembayaran
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Pembayaran> updateStatusPembayaran(@PathVariable Long id, 
-                                                             @RequestParam StatusPembayaran statusPembayaran) {
-        Pembayaran pembayaran = pembayaranService.updateStatusPembayaran(id, statusPembayaran);
-        return ResponseEntity.ok(pembayaran);
+    @GetMapping("/{id}")
+    public ResponseEntity<Pembayaran> getPembayaranById(@PathVariable Long id) {
+        return ResponseEntity.ok(pembayaranService.getPembayaranById(id));
     }
 
-    // Menghapus pembayaran berdasarkan ID
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletePembayaran(@PathVariable Long id) {
+    @GetMapping("/transaksi/{transaksiId}")
+    public ResponseEntity<Pembayaran> getPembayaranByTransaksiId(@PathVariable Long transaksiId) {
+        return ResponseEntity.ok(pembayaranService.getPembayaranByTransaksiId(transaksiId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pembayaran> updatePembayaran(
+            @PathVariable Long id,
+            @RequestBody PembayaranRequest request
+    ) {
+        Pembayaran updated = pembayaranService.updatePembayaran(id, request.jumlahBayar);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePembayaran(@PathVariable Long id) {
         pembayaranService.deletePembayaran(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Pembayaran berhasil dihapus.");
     }
 }
