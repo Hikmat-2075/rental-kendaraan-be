@@ -1,6 +1,6 @@
 package com.kelompok3.rental_kendaraan_be.model;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,12 +21,10 @@ public class Pembayaran {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "transaksi_id", nullable = false)
-    private Transaksi transaksi; // Menghubungkan dengan Transaksi
-
-    @Column(name = "metode_pembayaran", nullable = false)
-    private String metodePembayaran; // QRIS, Debit, dll
+    @OneToOne
+    @JoinColumn(name = "transaksi_id") // foreign key disimpan di tabel pembayaran
+    @JsonBackReference
+    private Transaksi transaksi;
 
     @Column(name = "jumlah_pembayaran", nullable = false)
     private Double jumlahPembayaran; // Jumlah uang yang dibayarkan
@@ -35,20 +33,18 @@ public class Pembayaran {
     @Column(name = "status_pembayaran", nullable = false)
     private StatusPembayaran statusPembayaran; // STATUS: PENDING, LUNAS, GAGAL
 
-    @Column(name = "tanggal_pembayaran", nullable = false)
-    private LocalDateTime tanggalPembayaran; // Tanggal pembayaran dilakukan
+    double kembalian; // Kembalian jika jumlah pembayaran lebih besar dari total harga
 
     // Constructor tanpa parameter (default)
     public Pembayaran() {
     }
 
     // Constructor dengan semua field
-    public Pembayaran(Transaksi transaksi, String metodePembayaran, Double jumlahPembayaran, StatusPembayaran statusPembayaran, LocalDateTime tanggalPembayaran) {
+    public Pembayaran(Transaksi transaksi, Double jumlahPembayaran, StatusPembayaran statusPembayaran, double kemb) {
         this.transaksi = transaksi;
-        this.metodePembayaran = metodePembayaran;
         this.jumlahPembayaran = jumlahPembayaran;
         this.statusPembayaran = statusPembayaran;
-        this.tanggalPembayaran = tanggalPembayaran;
+        this.kembalian = kemb;
     }
 
     // Getter dan Setter
@@ -68,14 +64,6 @@ public class Pembayaran {
         this.transaksi = transaksi;
     }
 
-    public String getMetodePembayaran() {
-        return metodePembayaran;
-    }
-
-    public void setMetodePembayaran(String metodePembayaran) {
-        this.metodePembayaran = metodePembayaran;
-    }
-
     public Double getJumlahPembayaran() {
         return jumlahPembayaran;
     }
@@ -92,17 +80,17 @@ public class Pembayaran {
         this.statusPembayaran = statusPembayaran;
     }
 
-    public LocalDateTime getTanggalPembayaran() {
-        return tanggalPembayaran;
+    public double getKembalian() {
+        return kembalian;
     }
 
-    public void setTanggalPembayaran(LocalDateTime tanggalPembayaran) {
-        this.tanggalPembayaran = tanggalPembayaran;
+    public void setKembalian(double kembalian) {
+        this.kembalian = kembalian;
     }
 
     public enum StatusPembayaran {
         PENDING, // Pembayaran belum selesai
-        LUNAS,   // Pembayaran berhasil dan selesai
-        GAGAL    // Pembayaran gagal
+        LUNAS, // Pembayaran berhasil dan selesai
+        GAGAL // Pembayaran gagal
     }
 }

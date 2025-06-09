@@ -22,6 +22,8 @@ public class RegisterRequest {
     @jakarta.validation.constraints.Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "No Telepon should be a valid phone number")
     private String noTelepon;
 
+    private String role;
+
     // Default constructor
     public RegisterRequest() {}
 
@@ -64,5 +66,13 @@ public class RegisterRequest {
 
     public void setNoTelepon(String noTelepon) {
         this.noTelepon = noTelepon;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

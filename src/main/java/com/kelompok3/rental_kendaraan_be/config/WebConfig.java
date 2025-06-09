@@ -13,11 +13,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Folder untuk gambar mobil
-        Path mobilDir = Paths.get("public", "uploads", "mobil");
+        Path mobilDir = Paths.get("public/uploads/mobil");
         String mobilPath = mobilDir.toFile().getAbsolutePath();
 
         // Folder untuk gambar motor
-        Path motorDir = Paths.get("public", "uploads", "motor");
+        Path motorDir = Paths.get("public/uploads/motor");
         String motorPath = motorDir.toFile().getAbsolutePath();
 
         // Mapping URL ke folder fisik

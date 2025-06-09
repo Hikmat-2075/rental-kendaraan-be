@@ -1,19 +1,27 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
-import com.kelompok3.rental_kendaraan_be.model.Motor;
-import com.kelompok3.rental_kendaraan_be.service.MotorService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.kelompok3.rental_kendaraan_be.model.Kendaraan;
+import com.kelompok3.rental_kendaraan_be.model.Motor;
+import com.kelompok3.rental_kendaraan_be.service.MotorService;
 
 @RestController
 @RequestMapping("/api/motor")
@@ -39,7 +47,7 @@ public class MotorController {
             @RequestParam("nomorPolisi") String nomorPolisi,
             @RequestParam("tahun") int tahun,
             @RequestParam("status") String status,
-            @RequestParam("harga") int harga,
+            @RequestParam("harga") Double harga,
             @RequestParam("jenisTransmisi") String jenisTransmisi,
             @RequestParam("jenisBahanBakar") String jenisBahanBakar,
             @RequestParam("tipeMotor") String tipeMotor,
@@ -58,7 +66,7 @@ public class MotorController {
             motor.setNomorPolisi(nomorPolisi);
             motor.setTahun(tahun);
             motor.setStatus(Kendaraan.StatusKendaraan.valueOf(status));
-            motor.setHarga((double) harga);
+            motor.setHarga(harga);
             motor.setJenisTransmisi(jenisTransmisi);
             motor.setJenisBahanBakar(jenisBahanBakar);
             motor.setTipeMotor(tipeMotor);
@@ -80,7 +88,7 @@ public class MotorController {
             @RequestParam(value = "nomorPolisi", required = false) String nomorPolisi,
             @RequestParam(value = "tahun", required = false) Integer tahun,
             @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "harga", required = false) Integer harga,
+            @RequestParam(value = "harga", required = false) Double harga,
             @RequestParam(value = "jenisTransmisi", required = false) String jenisTransmisi,
             @RequestParam(value = "jenisBahanBakar", required = false) String jenisBahanBakar,
             @RequestParam(value = "tipeMotor", required = false) String tipeMotor,
@@ -110,7 +118,7 @@ public class MotorController {
             if (nomorPolisi != null) existing.setNomorPolisi(nomorPolisi);
             if (tahun != null) existing.setTahun(tahun);
             if (status != null) existing.setStatus(Kendaraan.StatusKendaraan.valueOf(status));
-            if (harga != null) existing.setHarga((double) harga);
+            if (harga != null) existing.setHarga(harga);
             if (jenisTransmisi != null) existing.setJenisTransmisi(jenisTransmisi);
             if (jenisBahanBakar != null) existing.setJenisBahanBakar(jenisBahanBakar);
             if (tipeMotor != null) existing.setTipeMotor(tipeMotor);

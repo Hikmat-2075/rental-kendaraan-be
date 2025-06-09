@@ -1,14 +1,6 @@
 package com.kelompok3.rental_kendaraan_be.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.kelompok3.rental_kendaraan_be.dto.AuthResponseDTO;
-import com.kelompok3.rental_kendaraan_be.dto.LoginRequest;
-import com.kelompok3.rental_kendaraan_be.dto.RegisterRequest;
-import com.kelompok3.rental_kendaraan_be.model.User;
-import com.kelompok3.rental_kendaraan_be.repository.UserRepository;
-import com.kelompok3.rental_kendaraan_be.security.JWTGenerator;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,9 +9,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.kelompok3.rental_kendaraan_be.dto.AuthResponseDTO;
+import com.kelompok3.rental_kendaraan_be.dto.LoginRequest;
+import com.kelompok3.rental_kendaraan_be.dto.RegisterRequest;
+import com.kelompok3.rental_kendaraan_be.model.User;
+import com.kelompok3.rental_kendaraan_be.repository.UserRepository;
 import com.kelompok3.rental_kendaraan_be.security.CustomUserDetailsService;
+import com.kelompok3.rental_kendaraan_be.security.JWTGenerator;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -58,7 +59,12 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String token = jwtGenerator.generateToken(authentication);
-            return ResponseEntity.ok(new AuthResponseDTO(token));
+
+            User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+            AuthResponseDTO response = new AuthResponseDTO(token, "Bearer ", user.getUsername(), user.getRole(), user.getId());
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthResponseDTO("Invalid username or password"));
@@ -77,7 +83,7 @@ public class AuthController {
         user.setEmail(registerRequest.getEmail());
         user.setNamaLengkap(registerRequest.getNamaLengkap());
         user.setNoTelepon(registerRequest.getNoTelepon());
-        user.setRole("PENYEWA"); // Set default role
+        user.setRole(registerRequest.getRole()); // Set default role
 
         userRepository.save(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
