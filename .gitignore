@@ -32,12 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# Ignore application properties (contains DB & JWT credentials) — pattern below
-# was ".properties*" which never matched "application.properties"
-application.properties
-application-*.properties
-!application.properties.example
-
-# Uploaded vehicle images (runtime user content, not source)
-/public/uploads/
+# Ignore application.properties
+.properties*
 
